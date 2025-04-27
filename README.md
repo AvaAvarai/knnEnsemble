@@ -1,15 +1,57 @@
 # knnEnsemble
 
-knnEnsemble for homogeneous data classification like MNIST, competitive with CNN architectures.
+**knnEnsemble** for homogeneous data classification like MNIST, competitive with CNN architectures. To compare with CNN architectures, we consider the results documented on [Wikipedia](https://en.wikipedia.org/wiki/MNIST_database#Classifiers). We seek competitive accuracy with CNN methods on the handwritten digit MNIST classification without requiring deep learning.
 
-Dimensionality reduction: Using 2px and 3px cutoffs on the boundary of all train and eval data with kNN k=3 was same accuracy. We choose to use 3px for the smaller dimensionality of data. 28 x 28 (original size) = 22 x 22 (3px all edges cut off) = 11 x 11 (2x2 kernel 2 stride pooling.) 11x11=121-D / 784-D = 0.15433673469387755102040816326531 = 1 - 0.15433673469387755102040816326531 = 0.84566326530612244897959183673469 ~ 84.57% dimensional reduction applied to the data.
+These classification models to see initial publication at IV25.
 
-Results:
+## Dimensionality Reduction
 
-1.	We can use an ensemble of k-NN with majority vote, using singular votes per model in the ensemble we currently get: Best model: Ensemble (k=1) + (k=3) + (k=5) + (k=7) + (k=21) Accuracy: 0.9786, (k-fold confirm in progress) Mistakes: 214, second best ensemble is (k=1) + (k=3) + (k=5) + (k=7) + (k=15) Accuracy: 0.9783, Mistakes: 217.
+We applied dimensionality reduction by cutting 2px and 3px from the boundary of all train and evaluation data. Using kNN with k=3, both cutoffs achieved the same accuracy. We choose to use the 3px cutoff for smaller dimensionality.
+
+- Original size: 28 × 28 = 784
+- After 3px cutoff: 22 × 22 = 484
+- After 2x2 kernel and stride 2 pooling: 11 × 11 = 121
+
+Dimensionality reduction ratio:
+
+
+121/784 = 0.1543 or about 84.57% reduction
+
+
+## Results
+
+### 1. Majority Vote Ensemble
+
+Current results are training on all 60k train cases and testing on all 10k test cases, CV in progress for further comparison.
+
+Using an ensemble of k-NN classifiers with one vote per model:
+
+- Best model: (k=1) + (k=3) + (k=5) + (k=7) + (k=21)
+- Accuracy: 0.9786
+- Mistakes: 214
+- Second best ensemble: (k=1) + (k=3) + (k=5) + (k=7) + (k=15)
+- Accuracy: 0.9783
+- Mistakes: 217
+
 ![Mistakes in tSNE](best_model_errors_tsne.png)
 
-2.	We can give classifiers multiple votes here is the simplest most successful model seen to date. Current best: 1×(k=1) + 1×(k=3) + 1×(k=5) + 2×(k=7) + 1×(k=21) Accuracy: 0.9789, Mistakes: 211, tied with many others like  2×(k=1) + 1×(k=3) + 1×(k=5) + 3×(k=7) + 1×(k=21) | 0.9789 | 211 | 2.11%.
+### 2. Weighted Vote Ensemble
+
+Inspired by succesful work with CNN voting [Vu 2025] we test vote combinations of 1,2,…,10 votes assigned to each of the 5 individual k-NN classifiers. Interestingly, the weighted combinations have many tying model capabilities.
+
+Allowing multiple votes per classifier:
+
+- Best model: 1×(k=1) + 1×(k=3) + 1×(k=5) + 2×(k=7) + 1×(k=21)
+- Accuracy: 0.9789
+- Mistakes: 211
+
+Another top model:
+
+- 2×(k=1) + 1×(k=3) + 1×(k=5) + 3×(k=7) + 1×(k=21)
+- Accuracy: 0.9789
+- Mistakes: 211
+
+Error rate: 2.11%
 
 ## License Information
 
